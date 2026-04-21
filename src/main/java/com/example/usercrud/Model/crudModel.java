@@ -18,5 +18,6 @@ public class crudModel {
     private String email;
     private String contactNumber;
     private String password;
+    private String role;
 
    }

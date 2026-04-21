@@ -21,4 +21,15 @@ public class ProductService {
     public List<ProductModel> getAllProducts() {
         return repository.findAll();
     }
+    public ProductModel updateProduct(String id, ProductModel product) {
+        return repository.findById(id).map(existing -> {
+            existing.setName(product.getName());
+            existing.setPrice(product.getPrice());
+            return repository.save(existing);
+        }).orElseThrow(() -> new RuntimeException("Product not found"));
+    }
+
+    public void deleteProduct(String id) {
+        repository.deleteById(id);
+    }
 }

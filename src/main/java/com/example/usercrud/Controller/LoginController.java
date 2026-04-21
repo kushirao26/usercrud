@@ -29,8 +29,11 @@ public class LoginController {
 
         if (user != null &&
                 encoder.matches(request.getPassword(), user.getPassword())) {
-
-            return jwtUtil.generateToken(user.getUsername());
+        	
+            return jwtUtil.generateToken(
+                    user.getUsername(),
+                    user.getRole() 
+            );
         }
 
         return "Invalid Username or Password";
