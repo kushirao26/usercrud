@@ -27,9 +27,7 @@ public class LoginController {
 
         crudModel user = service.getByUsername(request.getUsername());
 
-        if (user != null &&
-                encoder.matches(request.getPassword(), user.getPassword())) {
-        	
+        if (user != null &&encoder.matches(request.getPassword(), user.getPassword())) {
             return jwtUtil.generateToken(
                     user.getUsername(),
                     user.getRole() 

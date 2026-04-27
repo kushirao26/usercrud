@@ -1,13 +1,16 @@
 package com.example.usercrud.Controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 import com.example.usercrud.Model.ProductModel;
 import com.example.usercrud.Service.ProductService;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/products") 
 public class ProductController {
 
     private final ProductService service;
@@ -17,6 +20,7 @@ public class ProductController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductModel createProduct(@RequestBody ProductModel product) {
         return service.saveProduct(product);
     }
@@ -25,16 +29,23 @@ public class ProductController {
     public List<ProductModel> getProducts() {
         return service.getAllProducts();
     }
-    
+
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductModel updateProduct(@PathVariable("id") String id,
                                       @RequestBody ProductModel product) {
         return service.updateProduct(id, product);
     }
-    
+
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String deleteProduct(@PathVariable("id") String id) {
         service.deleteProduct(id);
         return "Product deleted successfully";
+    }
+
+    @PostMapping("/sum")
+    public double sumCSV(@RequestParam("file") MultipartFile file) {
+        return service.sumColumn(file);
     }
 }
