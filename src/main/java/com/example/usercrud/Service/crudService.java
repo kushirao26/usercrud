@@ -14,12 +14,17 @@ public class crudService {
 
 	@Autowired
     private crudRepository repository;
+	
+	@Autowired
+	private EmailService emailService;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public crudModel createUser(crudModel user) {
         user.setPassword(encoder.encode(user.getPassword()));
-        return repository.save(user);
+        crudModel savedUser = repository.save(user);
+        emailService.sendSignupEmail(savedUser.getEmail(), savedUser.getUsername());
+        return savedUser;
     }
 
     public List<crudModel> getAllUsers() {
