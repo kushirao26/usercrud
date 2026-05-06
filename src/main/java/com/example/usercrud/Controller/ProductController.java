@@ -44,8 +44,9 @@ public class ProductController {
         return "Product deleted successfully";
     }
 
-    @PostMapping("/sum")
-    public double sumCSV(@RequestParam("file") MultipartFile file) {
-        return service.sumColumn(file);
+    @PostMapping("/upload")
+    public String uploadCSV(@RequestParam("file") MultipartFile file,
+                            @RequestParam("delimiter") String delimiter) {
+        return service.saveCSVData(file, delimiter);
     }
 }

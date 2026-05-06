@@ -2,7 +2,6 @@ package com.example.usercrud.Service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -12,18 +11,25 @@ import com.example.usercrud.Repository.crudRepository;
 @Service
 public class crudService {
 
-	@Autowired
-    private crudRepository repository;
-	
-	@Autowired
-	private EmailService emailService;
+    private final crudRepository repository;
+    private final EmailService emailService;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    public crudService(crudRepository repository, EmailService emailService) {
+        this.repository = repository;
+        this.emailService = emailService;
+    }
 
     public crudModel createUser(crudModel user) {
         user.setPassword(encoder.encode(user.getPassword()));
+
         crudModel savedUser = repository.save(user);
-        emailService.sendSignupEmail(savedUser.getEmail(), savedUser.getUsername());
+
+        emailService.sendEmailWithPdf(
+                savedUser.getEmail(),
+                savedUser.getUsername()
+        );
+
         return savedUser;
     }
 
@@ -57,6 +63,7 @@ public class crudService {
     public void deleteUser(String id) {
         repository.deleteById(id);
     }
+
     public crudModel getByUsername(String username) {
         return repository.findByUsername(username);
     }
