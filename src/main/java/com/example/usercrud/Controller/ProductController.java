@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import com.example.usercrud.Model.ColumnResponse;
 import com.example.usercrud.Model.ProductModel;
 import com.example.usercrud.Service.ProductService;
 
@@ -45,8 +46,13 @@ public class ProductController {
     }
 
     @PostMapping("/upload")
-    public String uploadCSV(@RequestParam("file") MultipartFile file,
-                            @RequestParam("delimiter") String delimiter) {
+    public String uploadCSV(
+            @RequestPart("file") MultipartFile file,
+            @RequestPart("delimiter") String delimiter) {
         return service.saveCSVData(file, delimiter);
+    }
+    @PostMapping("/analyze")
+    public List <ColumnResponse> analyzeCSV(@RequestPart("file") MultipartFile file, @RequestPart("delimiter")String delimiter){
+    	return service.analyzeCSV(file,delimiter);
     }
 }
