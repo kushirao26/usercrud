@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.usercrud.Model.crudModel;
 import com.example.usercrud.Service.crudService;
+import com.example.usercrud.Service.KafkaProducerService;
 
 @RestController
 @RequestMapping("/api/users")
@@ -15,9 +16,18 @@ public class crudController {
     @Autowired
     private crudService service;
     
+    @Autowired
+    private KafkaProducerService producerService;
+    
+    
     @PostMapping
     public crudModel createUser(@RequestBody crudModel user) {
-        return service.createUser(user);
+
+        crudModel savedUser = service.createUser(user);
+
+        producerService.sendUser(savedUser);
+
+        return savedUser;
     }
 
     @GetMapping

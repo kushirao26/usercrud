@@ -1,56 +1,68 @@
 package com.example.usercrud.security;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.authority.SimpleGrantedAuthority; 
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List; 
+import java.util.List;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+	@Autowired
+	private JwtUtil jwtUtil;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
-    	String path= request.getServletPath();
-    	if(path.equals("/api/product/upload")) {
-    		filterChain.doFilter(request, response);
-    		return;
-    	}
-        String header = request.getHeader("Authorization");
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 
-        if (header != null && header.startsWith("Bearer ")) {
+		String path = request.getServletPath();
+		System.out.println("PATH = " + path);
 
-            String token = header.substring(7);
+		return path.startsWith("/api/auth") || path.startsWith("/api/json") || path.startsWith("/api/kafka")
+				|| path.startsWith("/api/products") || path.equals("/api/users");
+	}
 
-            if (jwtUtil.validateToken(token)) {
-                String username = jwtUtil.extractUsername(token);
-                String role = jwtUtil.extractRole(token);
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
 
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(username,null,List.of(new SimpleGrantedAuthority("ROLE_" + role)));
+		String header = request.getHeader("Authorization");
 
-                SecurityContextHolder.getContext().setAuthentication(auth);
+		if (header == null || !header.startsWith("Bearer ")) {
 
-            } else {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Invalid or Expired Token");
-                return;
-            }
-        }
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().write("Token Missing");
+			return;
+		}
 
-        filterChain.doFilter(request, response);
-    }
+		String token = header.substring(7);
+
+		if (jwtUtil.validateToken(token)) {
+
+			String username = jwtUtil.extractUsername(token);
+			String role = jwtUtil.extractRole(token);
+
+			UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, null,
+					List.of(new SimpleGrantedAuthority("ROLE_" + role)));
+
+			SecurityContextHolder.getContext().setAuthentication(auth);
+
+		} else {
+
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().write("Invalid Token");
+			return;
+		}
+
+		filterChain.doFilter(request, response);
+	}
 }
