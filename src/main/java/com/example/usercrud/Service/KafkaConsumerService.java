@@ -8,13 +8,13 @@ import com.example.usercrud.Model.crudModel;
 @Service
 public class KafkaConsumerService {
 
-	@KafkaListener(topics = "user-topic", groupId = "group-id")
-	public void consume(crudModel user) {
+    @KafkaListener(topics = "user-topic", groupId = "group-id")
+    public void consume(crudModel user) {
 
-	    System.out.println("USER RECEIVED");
+        System.out.println("USER RECEIVED");
 
-	    System.out.println(user.getUsername());
+        System.out.println("Username: " + user.getUsername());
 
-	    System.out.println(user.getEmail());
-	}
+        System.out.println("Email: " + user.getEmail());
+    }
 }

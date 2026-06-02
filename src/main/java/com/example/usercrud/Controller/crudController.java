@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.usercrud.Model.crudModel;
-import com.example.usercrud.Service.crudService;
 import com.example.usercrud.Service.KafkaProducerService;
+import com.example.usercrud.Service.crudService;
 
 @RestController
 @RequestMapping("/api/users")
@@ -15,11 +15,10 @@ public class crudController {
 
     @Autowired
     private crudService service;
-    
+
     @Autowired
     private KafkaProducerService producerService;
-    
-    
+
     @PostMapping
     public crudModel createUser(@RequestBody crudModel user) {
 
@@ -41,7 +40,8 @@ public class crudController {
     }
 
     @PutMapping("/{id}")
-    public crudModel updateUser(@PathVariable("id") String id, @RequestBody crudModel user) {
+    public crudModel updateUser(@PathVariable("id") String id,
+                                @RequestBody crudModel user) {
         return service.updateUser(id, user);
     }
 
