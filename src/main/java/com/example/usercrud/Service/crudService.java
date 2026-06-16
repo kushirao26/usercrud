@@ -2,8 +2,12 @@ package com.example.usercrud.Service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.example.usercrud.Model.crudModel;
 import com.example.usercrud.Repository.crudRepository;
@@ -13,8 +17,8 @@ public class crudService {
 
     private final crudRepository repository;
     private final EmailService emailService;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     public crudService(crudRepository repository, EmailService emailService) {
         this.repository = repository;
         this.emailService = emailService;
@@ -37,11 +41,15 @@ public class crudService {
         return repository.findAll();
     }
 
-    public crudModel getUserById(String id) {
+    @Cacheable(value = "users", key = "#p0")
+    public crudModel getUserById(Long id) {
+        System.out.println("========== DB HIT ==========");
         return repository.findById(id).orElse(null);
     }
 
-    public crudModel updateUser(String id, crudModel newUser) {
+    @CachePut(value = "users", key = "#p0")
+    public crudModel updateUser(Long id, crudModel newUser) {
+
         crudModel user = repository.findById(id).orElse(null);
 
         if (user != null) {
@@ -59,12 +67,19 @@ public class crudService {
         }
         return null;
     }
-
-    public void deleteUser(String id) {
+    
+    @CacheEvict(value = "users", key = "#p0")
+    public void deleteUser(Long id) {
         repository.deleteById(id);
     }
 
     public crudModel getByUsername(String username) {
         return repository.findByUsername(username);
+    }
+
+    @Async("taskExecutor")
+    public void sendBackgroundLog(Long userId) {
+        System.out.println("Async running thread: " + Thread.currentThread().getName()
+                + " | userId: " + userId);
     }
 }

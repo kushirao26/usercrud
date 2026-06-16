@@ -1,21 +1,25 @@
 package com.example.usercrud.Model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
 
+@Entity
+@Table(name = "products")
 @Getter
 @Setter
-@Document(collection = "products")
 public class ProductModel {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String name;
+
     private double price;
+
     private int quantity;
+
     private double discount;
 }

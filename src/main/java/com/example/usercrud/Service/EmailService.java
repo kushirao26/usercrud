@@ -40,4 +40,20 @@ public class EmailService {
             System.out.println("Error: " + e.getMessage());
         }
     }
+    public void sendSumEmail(String toEmail,int a, int b) {
+    	System.out.println("sendSumEmailcalled");
+    	try {
+    		int sum=a+b;
+    		MimeMessage message=mailSender.createMimeMessage();
+    		MimeMessageHelper helper= new MimeMessageHelper(message,true);
+    		helper.setTo(toEmail);
+    		helper.setSubject("sum result");
+    		helper.setText("Hello,\n"+ "A="+a+"\n"+"B="+b+"\n"+"Sum="+sum);
+    		mailSender.send(message);
+    		System.out.println("Sum sent");
+    	}
+    	catch(Exception e) {
+    		System.out.println("Error:"+e.getMessage());
+    	}
+    }
 }

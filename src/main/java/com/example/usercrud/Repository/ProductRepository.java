@@ -1,7 +1,8 @@
 package com.example.usercrud.Repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import com.example.usercrud.Model.ProductModel;
 
-public interface ProductRepository extends MongoRepository<ProductModel, String> {
+public interface ProductRepository extends JpaRepository<ProductModel, String> {
 }

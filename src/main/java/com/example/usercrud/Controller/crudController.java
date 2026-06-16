@@ -2,52 +2,44 @@ package com.example.usercrud.Controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.usercrud.Model.crudModel;
-import com.example.usercrud.Service.KafkaProducerService;
 import com.example.usercrud.Service.crudService;
 
 @RestController
 @RequestMapping("/api/users")
 public class crudController {
 
-    @Autowired
-    private crudService service;
+    private final crudService service;
 
-    @Autowired
-    private KafkaProducerService producerService;
-
-    @PostMapping
-    public crudModel createUser(@RequestBody crudModel user) {
-
-        crudModel savedUser = service.createUser(user);
-
-        producerService.sendUser(savedUser);
-
-        return savedUser;
+    public crudController(crudService service) {
+        this.service = service;
     }
 
-    @GetMapping
-    public List<crudModel> getAllUsers() {
-        return service.getAllUsers();
+    @PostMapping
+    public crudModel create(@RequestBody crudModel user) {
+        return service.createUser(user);
     }
 
     @GetMapping("/{id}")
-    public crudModel getUserById(@PathVariable("id") String id) {
+    public crudModel getById(@PathVariable("id") Long id) {
         return service.getUserById(id);
     }
 
+    @GetMapping
+    public List<crudModel> getAll() {
+        return service.getAllUsers();
+    }
+
     @PutMapping("/{id}")
-    public crudModel updateUser(@PathVariable("id") String id,
-                                @RequestBody crudModel user) {
+    public crudModel update(@PathVariable("id") Long id,
+                            @RequestBody crudModel user) {
         return service.updateUser(id, user);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable("id") String id) {
+    public void delete(@PathVariable("id") Long id) {
         service.deleteUser(id);
-        return "User deleted successfully";
     }
 }

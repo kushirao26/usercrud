@@ -1,23 +1,35 @@
 package com.example.usercrud.Model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.*;
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
-@Document(collection = "users")
 @Getter
 @Setter
-public class crudModel {
+@Entity
+@Table(name = "users")
+
+
+public class crudModel implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
-    private String id;
-    
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String contactNumber;
-    private String password;
-    private String role;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-   }
+    @Column(nullable = false, unique = true)
+    private String username;
+
+    private String firstName;
+
+    private String lastName;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    private String contactNumber;
+
+    private String password;
+
+    private String role;
+}
